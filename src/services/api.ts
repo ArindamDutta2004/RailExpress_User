@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/user';
-export const BACKEND_BASE = 'http://localhost:5000';
+const API_BASE_URL = 'https://railexpress-backend.onrender.com/api/user';
+export const BACKEND_BASE = 'https://railexpress-backend.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
