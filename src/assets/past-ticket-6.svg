@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#0f766e"/>
+  <rect x="42" y="42" width="1116" height="616" rx="28" fill="#f0fdfa"/>
+  <text x="88" y="110" font-size="40" font-family="Segoe UI, Arial" fill="#115e59">IRCTC e-Ticket (Sample)</text>
+  <text x="88" y="158" font-size="24" font-family="Segoe UI, Arial" fill="#134e4a">PNR: 5501429904</text>
+  <text x="88" y="198" font-size="24" font-family="Segoe UI, Arial" fill="#134e4a">Train: 22692 SBC RAJDHANI</text>
+  <text x="88" y="238" font-size="24" font-family="Segoe UI, Arial" fill="#134e4a">From: SBC   To: NZM</text>
+  <text x="88" y="278" font-size="24" font-family="Segoe UI, Arial" fill="#134e4a">Class: 3A   Coach: B4   Seat: 12</text>
+  <rect x="88" y="318" width="1024" height="2" fill="#99f6e4"/>
+  <text x="88" y="366" font-size="22" font-family="Segoe UI, Arial" fill="#134e4a">Passenger: Suman Khan (Male, 35)</text>
+  <text x="88" y="404" font-size="22" font-family="Segoe UI, Arial" fill="#134e4a">Journey Date: 05-May-2026</text>
+  <text x="88" y="442" font-size="22" font-family="Segoe UI, Arial" fill="#134e4a">Boarding: SBC   Departure: 20:45</text>
+  <rect x="885" y="388" width="215" height="215" rx="14" fill="#ccfbf1"/>
+  <text x="961" y="510" font-size="22" font-family="Segoe UI, Arial" fill="#0f766e">QR</text>
+</svg>

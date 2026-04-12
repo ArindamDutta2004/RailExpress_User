@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Star, MessageSquare } from 'lucide-react';
 import { feedbackAPI } from '../services/api';
 
@@ -6,6 +6,7 @@ interface FeedbackSectionProps {
   bookingId: string;
   onFeedbackSuccess: () => void;
   phone?: string;
+  alreadySubmitted?: boolean;
 }
 
 const QUICK_COMMENTS = [
@@ -16,7 +17,8 @@ const QUICK_COMMENTS = [
   'Needs improvement in response time.',
 ];
 
-const FeedbackSection = ({ bookingId, onFeedbackSuccess, phone }: FeedbackSectionProps) => {
+const FeedbackSection = ({ bookingId, onFeedbackSuccess, phone, alreadySubmitted = false }: FeedbackSectionProps) => {
+  const localStorageKey = useMemo(() => `feedbackSubmitted:${bookingId}`, [bookingId]);
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -24,7 +26,29 @@ const FeedbackSection = ({ bookingId, onFeedbackSuccess, phone }: FeedbackSectio
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(alreadySubmitted);
+
+  useEffect(() => {
+    if (alreadySubmitted) {
+      setSubmitted(true);
+      setSuccess('Feedback already submitted for this booking');
+      try {
+        localStorage.setItem(localStorageKey, 'true');
+      } catch (_err) {
+        // Ignore localStorage errors.
+      }
+      return;
+    }
+    try {
+      const localSubmitted = localStorage.getItem(localStorageKey) === 'true';
+      if (localSubmitted) {
+        setSubmitted(true);
+        setSuccess('Feedback already submitted for this booking');
+      }
+    } catch (_err) {
+      // Ignore localStorage errors.
+    }
+  }, [alreadySubmitted, localStorageKey]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +83,11 @@ const FeedbackSection = ({ bookingId, onFeedbackSuccess, phone }: FeedbackSectio
 
       setSuccess('Thank you for your feedback!');
       setSubmitted(true);
+      try {
+        localStorage.setItem(localStorageKey, 'true');
+      } catch (_err) {
+        // Ignore localStorage errors.
+      }
 
       setTimeout(() => {
         onFeedbackSuccess();
@@ -67,7 +96,20 @@ const FeedbackSection = ({ bookingId, onFeedbackSuccess, phone }: FeedbackSectio
       const errorMessage =
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
         'Failed to submit feedback';
-      setError(errorMessage);
+      const normalized = String(errorMessage).toLowerCase();
+      if (normalized.includes('already submitted')) {
+        setSubmitted(true);
+        setSuccess('Feedback already submitted for this booking');
+        setError('');
+        try {
+          localStorage.setItem(localStorageKey, 'true');
+        } catch (_err) {
+          // Ignore localStorage errors.
+        }
+        onFeedbackSuccess();
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

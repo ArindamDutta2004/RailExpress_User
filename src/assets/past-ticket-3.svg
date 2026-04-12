@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#312e81"/>
+  <rect x="52" y="52" width="1096" height="596" rx="26" fill="#ffffff"/>
+  <text x="95" y="116" font-size="40" font-family="Segoe UI, Arial" fill="#1e1b4b">IRCTC e-Ticket (Sample)</text>
+  <text x="95" y="166" font-size="24" font-family="Segoe UI, Arial" fill="#334155">PNR: 4782059133</text>
+  <text x="95" y="206" font-size="24" font-family="Segoe UI, Arial" fill="#334155">Train: 12801 PURUSHOTTAM EXP</text>
+  <text x="95" y="246" font-size="24" font-family="Segoe UI, Arial" fill="#334155">From: PURI   To: NDLS</text>
+  <text x="95" y="286" font-size="24" font-family="Segoe UI, Arial" fill="#334155">Class: SL   Coach: S5   Seat: 41</text>
+  <rect x="95" y="325" width="1008" height="2" fill="#cbd5e1"/>
+  <text x="95" y="372" font-size="22" font-family="Segoe UI, Arial" fill="#475569">Passenger: S. Mondal (Female, 34)</text>
+  <text x="95" y="410" font-size="22" font-family="Segoe UI, Arial" fill="#475569">Journey: 21-Apr-2026</text>
+  <text x="95" y="448" font-size="22" font-family="Segoe UI, Arial" fill="#475569">Boarding Time: 22:10</text>
+  <rect x="874" y="382" width="228" height="228" rx="12" fill="#ede9fe"/>
+  <text x="959" y="514" font-size="22" font-family="Segoe UI, Arial" fill="#312e81">QR</text>
+</svg>

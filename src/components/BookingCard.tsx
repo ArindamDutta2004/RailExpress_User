@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MapPin, Calendar, User, Phone, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import PaymentSection from './PaymentSection';
 import FeedbackSection from './FeedbackSection';
@@ -16,6 +16,7 @@ interface Booking {
   phone: string;
   passengers: number;
   passengerDetails?: Array<{ name: string; dateOfBirth: string; age: number }>;
+  preferredTrains?: string[];
   statusPhase1: string;
   statusPhase2: string;
   paymentStatus: string;
@@ -32,6 +33,9 @@ interface Booking {
   ticketPDF?: string;
   billPDF?: string;
   refundQRProof?: string;
+  refundVerificationStatus?: 'pending' | 'verified' | 'processed';
+  refundProofScreenshot?: string;
+  feedbackSubmitted?: boolean;
   createdAt: string;
 }
 
@@ -44,6 +48,17 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
   const [expanded, setExpanded] = useState(false);
   const [refundFile, setRefundFile] = useState<File | null>(null);
   const [refundUploading, setRefundUploading] = useState(false);
+  const [docDownloading, setDocDownloading] = useState<'ticket' | 'bill' | null>(null);
+  const localFeedbackKey = useMemo(() => `feedbackSubmitted:${booking._id}`, [booking._id]);
+  const [localFeedbackSubmitted, setLocalFeedbackSubmitted] = useState(false);
+
+  useEffect(() => {
+    try {
+      setLocalFeedbackSubmitted(localStorage.getItem(localFeedbackKey) === 'true');
+    } catch (_err) {
+      setLocalFeedbackSubmitted(false);
+    }
+  }, [localFeedbackKey]);
 
   const normalizeUploadUrl = (url?: string) => {
     if (!url) return url;
@@ -124,7 +139,8 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
     booking.currentStep === 7 &&
     booking.statusPhase2 === 'booking done' &&
     (booking.remainingAmount || 0) > 0;
-  const showFeedback = booking.currentStep >= 9 && booking.paymentStatus === 'completed';
+  const isFeedbackSubmitted = Boolean(booking.feedbackSubmitted || localFeedbackSubmitted);
+  const showFeedback = booking.paymentStatus === 'completed' && !isFeedbackSubmitted;
   const showRefundUpload =
     booking.statusPhase1 === 'cancelled' || booking.paymentStatus === 'cancelled';
 
@@ -142,6 +158,71 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
       alert(msg);
     } finally {
       setRefundUploading(false);
+    }
+  };
+
+  const handleDocumentDownload = async (type: 'ticket' | 'bill') => {
+    if (docDownloading) return;
+    setDocDownloading(type);
+    try {
+      const response = await bookingAPI.downloadDocument(booking._id, type);
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${type}-${booking._id}.pdf`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err: unknown) {
+      let msg = `Failed to download ${type} document`;
+      const fallbackPath = type === 'ticket' ? booking.ticketPDF : booking.billPDF;
+      const responseData = (err as { response?: { data?: unknown } })?.response?.data;
+      const responseStatus = (err as { response?: { status?: number } })?.response?.status;
+      if (responseData && typeof responseData === 'object' && 'message' in (responseData as Record<string, unknown>)) {
+        msg = String((responseData as { message?: string }).message || msg);
+      } else if (typeof Blob !== 'undefined' && responseData instanceof Blob) {
+        try {
+          const text = await responseData.text();
+          const parsed = JSON.parse(text);
+          if (parsed?.message) msg = String(parsed.message);
+        } catch (_e) {
+          // Keep fallback message.
+        }
+      }
+
+      const allowFallback =
+        isFeedbackSubmitted &&
+        Boolean(fallbackPath) &&
+        [404, 500, 502, 503].includes(Number(responseStatus || 0));
+
+      if (allowFallback) {
+        try {
+          const fallbackResponse = await fetch(normalizeUploadUrl(fallbackPath) || '', {
+            credentials: 'include',
+          });
+          if (!fallbackResponse.ok) {
+            throw new Error(`Fallback failed with status ${fallbackResponse.status}`);
+          }
+          const fallbackBlob = await fallbackResponse.blob();
+          const fallbackUrl = window.URL.createObjectURL(fallbackBlob);
+          const fallbackAnchor = document.createElement('a');
+          fallbackAnchor.href = fallbackUrl;
+          fallbackAnchor.download = `${type}-${booking._id}.pdf`;
+          document.body.appendChild(fallbackAnchor);
+          fallbackAnchor.click();
+          fallbackAnchor.remove();
+          window.URL.revokeObjectURL(fallbackUrl);
+          return;
+        } catch (_fallbackError) {
+          // Show original message if fallback also fails.
+        }
+      }
+
+      alert(msg);
+    } finally {
+      setDocDownloading(null);
     }
   };
 
@@ -235,6 +316,16 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
                 {booking.statusPhase2}
               </span>
             </div>
+            {!!booking.preferredTrains?.length && (
+              <div className="col-span-2">
+                <span className="text-gray-600">Preferred Trains:</span>
+                <ul className="mt-1 list-disc list-inside text-sm text-slate-800">
+                  {booking.preferredTrains.map((train, idx) => (
+                    <li key={`preferred-train-${idx}`}>{train}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           {showAdvancePayment && (
@@ -251,24 +342,31 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
           {showTicketDownload && (
             <div className="bg-white/85 rounded-xl p-4 border border-white/40">
               <h4 className="font-semibold text-slate-900 mb-3">Download Documents</h4>
+              {!isFeedbackSubmitted && (
+                <div className="mb-3 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-800">
+                  Submit feedback first to unlock ticket/bill downloads.
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 {booking.ticketPDF && (
-                  <a
-                    href={normalizeUploadUrl(booking.ticketPDF)}
-                    download
+                  <button
+                    type="button"
+                    onClick={() => handleDocumentDownload('ticket')}
+                    disabled={!isFeedbackSubmitted || docDownloading !== null}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-center text-sm press"
                   >
-                    Download Ticket
-                  </a>
+                    {docDownloading === 'ticket' ? 'Downloading...' : 'Download Ticket'}
+                  </button>
                 )}
                 {booking.billPDF && (
-                  <a
-                    href={normalizeUploadUrl(booking.billPDF)}
-                    download
+                  <button
+                    type="button"
+                    onClick={() => handleDocumentDownload('bill')}
+                    disabled={!isFeedbackSubmitted || docDownloading !== null}
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-center text-sm press"
                   >
-                    Download Bill
-                  </a>
+                    {docDownloading === 'bill' ? 'Downloading...' : 'Download Bill'}
+                  </button>
                 )}
               </div>
             </div>
@@ -286,7 +384,20 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
           )}
 
           {showFeedback && (
-            <FeedbackSection bookingId={booking._id} phone={booking.phone} onFeedbackSuccess={onUpdate} />
+            <FeedbackSection
+              bookingId={booking._id}
+              phone={booking.phone}
+              alreadySubmitted={isFeedbackSubmitted}
+              onFeedbackSuccess={() => {
+                try {
+                  localStorage.setItem(localFeedbackKey, 'true');
+                } catch (_err) {
+                  // Ignore localStorage errors.
+                }
+                setLocalFeedbackSubmitted(true);
+                onUpdate();
+              }}
+            />
           )}
 
           {showRefundUpload && (
@@ -294,7 +405,7 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
               <h4 className="font-semibold text-slate-900 mb-2">Refund / Return Money (Cancelled Ticket)</h4>
               <p className="text-sm text-slate-700">
                 Upload your payment QR/screenshot. Refund will be done in 1-2 days. If not received, contact{' '}
-                <span className="font-semibold">8942938405</span> or email{' '}
+                <span className="font-semibold">8942938405 / 9531760624</span> or email{' '}
                 <span className="font-semibold">sumankhan2909@gmail.com</span>.
               </p>
 
@@ -325,6 +436,26 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
                     className="text-sm text-blue-700 hover:underline"
                   >
                     View uploaded QR/proof
+                  </a>
+                </div>
+              )}
+              {booking.refundVerificationStatus && (
+                <div className="mt-3 text-xs">
+                  <span className="text-slate-600">Refund status: </span>
+                  <span className="font-semibold uppercase tracking-wide">
+                    {booking.refundVerificationStatus}
+                  </span>
+                </div>
+              )}
+              {booking.refundProofScreenshot && (
+                <div className="mt-2">
+                  <a
+                    href={normalizeUploadUrl(booking.refundProofScreenshot)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-green-700 hover:underline"
+                  >
+                    View admin refund proof
                   </a>
                 </div>
               )}

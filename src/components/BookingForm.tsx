@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { bookingAPI } from '../services/api';
-import { Calendar, MapPin, User, Phone, Hash } from 'lucide-react';
+import { Calendar, MapPin, Phone, Hash } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface BookingFormProps {
@@ -28,6 +28,7 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
     journeyDate: '',
     bookingType: 'reservation',
     phone: '',
+    preferredTrainsText: '',
   });
 
   useEffect(() => {
@@ -75,7 +76,7 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
   const fromSuggestions = filterStations(fromQuery);
   const toSuggestions = filterStations(toQuery);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -204,6 +205,15 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
       return false;
     }
 
+    const preferredTrains = formData.preferredTrainsText
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    if (preferredTrains.length > 6) {
+      setError('You can add up to 6 preferred trains');
+      return false;
+    }
+
     return true;
   };
 
@@ -228,6 +238,10 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
         journeyDate: formData.journeyDate,
         bookingType: formData.bookingType as 'tatkal' | 'reservation',
         phone: formData.phone,
+        preferredTrains: formData.preferredTrainsText
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean),
         passengers: passengerCount,
         passengerDetails: passengerDetails.map((p) => ({
           name: p.name,
@@ -243,6 +257,7 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
         journeyDate: '',
         bookingType: 'reservation',
         phone: '',
+        preferredTrainsText: '',
       });
       setPassengerCount(1);
       setPassengerDetails([{ name: '', dateOfBirth: '', age: '' }]);
@@ -406,6 +421,25 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
               </div>
             )}
           </div>
+        </div>
+
+        <div>
+          <label htmlFor="preferredTrainsText" className="block text-sm font-medium text-white/80 mb-1">
+            <div className="flex items-center gap-2">
+              <Hash className="w-4 h-4" />
+              Train Preference (Optional)
+            </div>
+          </label>
+          <textarea
+            id="preferredTrainsText"
+            name="preferredTrainsText"
+            value={formData.preferredTrainsText}
+            onChange={handleChange}
+            rows={4}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            placeholder={`If you have specific train choices, add one per line:\n1. 12345 - Train Name\n2. 22334 - Train Name\n(Up to 6 entries)`}
+            disabled={loading || disabled}
+          />
         </div>
 
         <div>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <rect width="1200" height="700" fill="#052e16"/>
+  <rect x="40" y="40" width="1120" height="620" rx="28" fill="#f8fafc"/>
+  <text x="84" y="108" font-size="40" font-family="Segoe UI, Arial" fill="#14532d">IRCTC e-Ticket (Sample)</text>
+  <text x="84" y="156" font-size="24" font-family="Segoe UI, Arial" fill="#334155">PNR: 2459813374</text>
+  <text x="84" y="198" font-size="24" font-family="Segoe UI, Arial" fill="#334155">Train: 12019 SHATABDI EXPRESS</text>
+  <text x="84" y="240" font-size="24" font-family="Segoe UI, Arial" fill="#334155">From: HWH   To: RNC</text>
+  <text x="84" y="282" font-size="24" font-family="Segoe UI, Arial" fill="#334155">Class: CC   Coach: C1   Seat: 22</text>
+  <rect x="84" y="326" width="1030" height="2" fill="#94a3b8"/>
+  <text x="84" y="378" font-size="23" font-family="Segoe UI, Arial" fill="#334155">Passenger: Aritra Dey (Male, 28)</text>
+  <text x="84" y="416" font-size="23" font-family="Segoe UI, Arial" fill="#334155">Date of Journey: 15-Apr-2026</text>
+  <text x="84" y="454" font-size="23" font-family="Segoe UI, Arial" fill="#334155">Boarding: HWH   Departure: 06:05</text>
+  <rect x="880" y="390" width="210" height="210" rx="14" fill="#dcfce7"/>
+  <text x="956" y="510" font-size="22" font-family="Segoe UI, Arial" fill="#14532d">QR</text>
+</svg>

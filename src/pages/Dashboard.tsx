@@ -27,12 +27,13 @@ interface Booking {
   finalQR?: string;
   ticketPDF?: string;
   billPDF?: string;
+  feedbackSubmitted?: boolean;
+  refundVerificationStatus?: 'pending' | 'verified' | 'processed';
+  refundProofScreenshot?: string;
   createdAt: string;
 }
 
 const Dashboard = () => {
-  const avatarUrl = (seed: string) =>
-    `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(seed)}`;
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -100,10 +101,24 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen animated-bg flex items-center justify-center page">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-white/80">Loading dashboard...</p>
+      <div className="min-h-screen animated-bg page">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="glass-card rounded-xl p-6 space-y-4">
+              <div className="h-8 w-56 rounded-lg skeleton" />
+              <div className="h-12 rounded-lg skeleton" />
+              <div className="h-12 rounded-lg skeleton" />
+              <div className="h-12 rounded-lg skeleton" />
+              <div className="h-40 rounded-xl skeleton" />
+            </div>
+            <div className="glass-card rounded-xl p-6 space-y-4">
+              <div className="h-8 w-44 rounded-lg skeleton" />
+              <div className="h-28 rounded-xl skeleton" />
+              <div className="h-28 rounded-xl skeleton" />
+              <div className="h-28 rounded-xl skeleton" />
+            </div>
+          </div>
+          <p className="mt-6 text-center text-white/80">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -126,14 +141,14 @@ const Dashboard = () => {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate('/profile')}
-                className="flex items-center gap-2 px-3 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 transition"
+                className="flex items-center gap-2 px-3 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 transition press"
               >
                 <UserCircle className="w-4 h-4" />
                 Profile
               </button>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition press"
               >
                 <LogOut className="w-4 h-4" />
                 Logout

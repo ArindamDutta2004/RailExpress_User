@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <rect x="45" y="45" width="1110" height="610" rx="24" fill="#ffffff" opacity="0.96"/>
+  <text x="90" y="110" font-size="42" font-family="Segoe UI, Arial" fill="#111827">IRCTC e-Ticket (Sample)</text>
+  <text x="90" y="160" font-size="26" font-family="Segoe UI, Arial" fill="#334155">PNR: 6127349012</text>
+  <text x="90" y="210" font-size="26" font-family="Segoe UI, Arial" fill="#334155">Train: 12345 HOWRAH RAJDHANI</text>
+  <text x="90" y="260" font-size="26" font-family="Segoe UI, Arial" fill="#334155">From: HWH   To: NDLS</text>
+  <text x="90" y="310" font-size="26" font-family="Segoe UI, Arial" fill="#334155">Class: 3A   Coach: B2   Seat: 31</text>
+  <rect x="90" y="360" width="1020" height="3" fill="#cbd5e1"/>
+  <text x="90" y="420" font-size="24" font-family="Segoe UI, Arial" fill="#475569">Passenger: Rahul Sen (Male, 32)</text>
+  <text x="90" y="465" font-size="24" font-family="Segoe UI, Arial" fill="#475569">Date of Journey: 12-Apr-2026</text>
+  <text x="90" y="510" font-size="24" font-family="Segoe UI, Arial" fill="#475569">Quota: GN   Boarding: HWH</text>
+  <rect x="860" y="405" width="220" height="220" rx="12" fill="#e2e8f0"/>
+  <text x="900" y="520" font-size="22" font-family="Segoe UI, Arial" fill="#0f172a">QR</text>
+</svg>

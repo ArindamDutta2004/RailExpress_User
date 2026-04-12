@@ -39,6 +39,7 @@ export const bookingAPI = {
     bookingType: 'tatkal' | 'reservation';
     phone: string;
     passengers: number;
+    preferredTrains?: string[];
     passengerDetails: Array<{
       name: string;
       dateOfBirth: string;
@@ -61,6 +62,9 @@ export const bookingAPI = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+
+  downloadDocument: (bookingId: string, type: 'ticket' | 'bill') =>
+    api.get(`/booking/${bookingId}/download/${type}`, { responseType: 'blob' }),
 };
 
 export const feedbackAPI = {
