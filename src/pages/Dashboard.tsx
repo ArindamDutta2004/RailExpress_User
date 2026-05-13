@@ -13,7 +13,7 @@ interface Booking {
   journeyDate: string;
   passengerName: string;
   dateOfBirth: string;
-  bookingType: 'tatkal' | 'reservation';
+  bookingType: 'tatkal' | 'reservation' | 'vip';
   age: number;
   phone: string;
   statusPhase1: string;

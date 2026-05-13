@@ -476,6 +476,7 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
             >
               <option value="reservation">Reservation</option>
               <option value="tatkal">Tatkal</option>
+              <option value="vip">VIP</option>
             </select>
           </div>
           <div>
