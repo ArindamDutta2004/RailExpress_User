@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://railexpress-backend.onrender.com/api/user';
-export const BACKEND_BASE = 'https://railexpress-backend.onrender.com';
+export const BACKEND_BASE =
+  import.meta.env.VITE_BACKEND_BASE_URL || 'https://railexpress-backend.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_USER_API_BASE_URL || `${BACKEND_BASE}/api/user`;
 
 const api = axios.create({
   baseURL: API_BASE_URL,

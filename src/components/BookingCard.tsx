@@ -165,6 +165,7 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
     if (docDownloading) return;
     setDocDownloading(type);
     try {
+      console.log(`Downloading ${type} PDF for booking`, booking._id);
       const response = await bookingAPI.downloadDocument(booking._id, type);
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
@@ -176,10 +177,9 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
       anchor.remove();
       window.URL.revokeObjectURL(url);
     } catch (err: unknown) {
+      console.error(`Failed to download ${type} PDF`, err);
       let msg = `Failed to download ${type} document`;
-      const fallbackPath = type === 'ticket' ? booking.ticketPDF : booking.billPDF;
       const responseData = (err as { response?: { data?: unknown } })?.response?.data;
-      const responseStatus = (err as { response?: { status?: number } })?.response?.status;
       if (responseData && typeof responseData === 'object' && 'message' in (responseData as Record<string, unknown>)) {
         msg = String((responseData as { message?: string }).message || msg);
       } else if (typeof Blob !== 'undefined' && responseData instanceof Blob) {
@@ -189,34 +189,6 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
           if (parsed?.message) msg = String(parsed.message);
         } catch (_e) {
           // Keep fallback message.
-        }
-      }
-
-      const allowFallback =
-        isFeedbackSubmitted &&
-        Boolean(fallbackPath) &&
-        [404, 500, 502, 503].includes(Number(responseStatus || 0));
-
-      if (allowFallback) {
-        try {
-          const fallbackResponse = await fetch(normalizeUploadUrl(fallbackPath) || '', {
-            credentials: 'include',
-          });
-          if (!fallbackResponse.ok) {
-            throw new Error(`Fallback failed with status ${fallbackResponse.status}`);
-          }
-          const fallbackBlob = await fallbackResponse.blob();
-          const fallbackUrl = window.URL.createObjectURL(fallbackBlob);
-          const fallbackAnchor = document.createElement('a');
-          fallbackAnchor.href = fallbackUrl;
-          fallbackAnchor.download = `${type}-${booking._id}.pdf`;
-          document.body.appendChild(fallbackAnchor);
-          fallbackAnchor.click();
-          fallbackAnchor.remove();
-          window.URL.revokeObjectURL(fallbackUrl);
-          return;
-        } catch (_fallbackError) {
-          // Show original message if fallback also fails.
         }
       }
 
