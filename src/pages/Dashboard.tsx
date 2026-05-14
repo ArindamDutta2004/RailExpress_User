@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { bookingAPI } from '../services/api';
 import BookingForm from '../components/BookingForm';
 import BookingCard from '../components/BookingCard';
+import NotificationBell from '../components/NotificationBell';
 import { LogOut, Ticket, RefreshCw, UserCircle } from 'lucide-react';
 
 interface Booking {
@@ -139,7 +140,8 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600 truncate">Welcome, {user?.name}</p>
               </div>
             </div>
-            <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:items-center sm:gap-3">
+            <div className="grid w-full grid-cols-[auto_1fr_1fr] gap-2 sm:w-auto sm:flex sm:items-center sm:gap-3">
+              <NotificationBell />
               <button
                 onClick={() => navigate('/profile')}
                 className="flex items-center justify-center gap-2 px-3 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 transition press"

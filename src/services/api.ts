@@ -66,6 +66,28 @@ export const bookingAPI = {
     api.get(`/booking/${bookingId}/download/${type}`, { responseType: 'blob' }),
 };
 
+export interface UserNotification {
+  _id: string;
+  bookingId?: string | null;
+  eventType: string;
+  title: string;
+  body: string;
+  url: string;
+  readAt?: string | null;
+  createdAt: string;
+}
+
+export const notificationAPI = {
+  list: () => api.get<{ notifications: UserNotification[]; unreadCount: number }>('/notifications'),
+  unreadCount: () => api.get<{ unreadCount: number }>('/notifications/unread-count'),
+  registerToken: (data: { token: string; platform?: string }) =>
+    api.post('/notifications/token', data),
+  deleteToken: (token: string) => api.delete('/notifications/token', { data: { token } }),
+  markRead: (id: string) => api.patch<UserNotification>(`/notifications/${id}/read`),
+  markUnread: (id: string) => api.patch<UserNotification>(`/notifications/${id}/unread`),
+  markAllRead: () => api.patch('/notifications/mark-all-read'),
+};
+
 export const feedbackAPI = {
   create: (data: { bookingId: string; phone: string; rating: number; comment: string }) =>
     api.post('/feedback/create', data),
