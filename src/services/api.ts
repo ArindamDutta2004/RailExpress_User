@@ -59,9 +59,7 @@ export const bookingAPI = {
   uploadRefundQR: (bookingId: string, file: File) => {
     const formData = new FormData();
     formData.append('refundQR', file);
-    return api.post(`/booking/${bookingId}/refund-qr`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return api.post(`/booking/${bookingId}/refund-qr`, formData);
   },
 
   downloadDocument: (bookingId: string, type: 'ticket' | 'bill') =>

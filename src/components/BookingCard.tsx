@@ -204,11 +204,11 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
         className="p-4 cursor-pointer"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-2 min-w-0">
               <MapPin className="w-4 h-4 text-white/90" />
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-white break-words">
                 {booking.fromStation} → {booking.toStation}
               </span>
             </div>
@@ -217,13 +217,13 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
               <span>{formatDate(booking.journeyDate)}</span>
             </div>
           </div>
-          <div className={`px-3 py-1 rounded-full text-xs font-semibold border flex items-center gap-1 ${getStatusColor(booking.paymentStatus)}`}>
+          <div className={`self-start px-3 py-1 rounded-full text-xs font-semibold border flex items-center gap-1 ${getStatusColor(booking.paymentStatus)}`}>
             {getStatusIcon(booking.paymentStatus)}
             {booking.paymentStatus}
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-white/80">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 text-sm text-white/80">
           <div className="flex items-center gap-1">
             <User className="w-4 h-4" />
             <span>{booking.passengerName}</span>
@@ -255,7 +255,7 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
 
       {expanded && (
         <div className="border-t border-white/15 bg-black/10 p-4 space-y-4">
-          <div className="bg-white/85 rounded-xl p-4 grid grid-cols-2 gap-4 text-sm">
+          <div className="bg-white/85 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-600">Age:</span>
               <span className="ml-2 font-medium">{booking.age}</span>
@@ -289,7 +289,7 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
               </span>
             </div>
             {!!booking.preferredTrains?.length && (
-              <div className="col-span-2">
+              <div className="sm:col-span-2">
                 <span className="text-gray-600">Preferred Trains:</span>
                 <ul className="mt-1 list-disc list-inside text-sm text-slate-800">
                   {booking.preferredTrains.map((train, idx) => (
@@ -319,7 +319,7 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
                   Submit feedback first to unlock ticket/bill downloads.
                 </div>
               )}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {booking.ticketPDF && (
                   <button
                     type="button"
@@ -386,13 +386,13 @@ const BookingCard = ({ booking, onUpdate }: BookingCardProps) => {
                   type="file"
                   accept="image/*"
                   onChange={(e) => setRefundFile(e.target.files?.[0] || null)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                  className="min-w-0 flex-1 px-3 py-2 border border-gray-300 rounded-lg"
                 />
                 <button
                   type="button"
                   onClick={handleRefundUpload}
                   disabled={!refundFile || refundUploading}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed press"
+                  className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed press"
                 >
                   {refundUploading ? 'Uploading...' : 'Upload'}
                 </button>

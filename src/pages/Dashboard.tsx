@@ -16,6 +16,7 @@ interface Booking {
   bookingType: 'tatkal' | 'reservation' | 'vip';
   age: number;
   phone: string;
+  passengers: number;
   statusPhase1: string;
   statusPhase2: string;
   paymentStatus: string;
@@ -128,27 +129,27 @@ const Dashboard = () => {
     <div className="min-h-screen animated-bg page">
       <nav className="bg-white/80 backdrop-blur shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 py-3 sm:h-16 sm:py-0">
+            <div className="flex min-w-0 items-center gap-3">
               <div className="bg-blue-600 p-2 rounded-lg">
                 <Ticket className="w-6 h-6 text-white" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h1 className="text-xl font-bold text-gray-800">Railway Booking</h1>
-                <p className="text-sm text-gray-600">Welcome, {user?.name}</p>
+                <p className="text-sm text-gray-600 truncate">Welcome, {user?.name}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:items-center sm:gap-3">
               <button
                 onClick={() => navigate('/profile')}
-                className="flex items-center gap-2 px-3 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 transition press"
+                className="flex items-center justify-center gap-2 px-3 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 transition press"
               >
                 <UserCircle className="w-4 h-4" />
                 Profile
               </button>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition press"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition press"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
@@ -158,7 +159,7 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
             {error}
@@ -171,20 +172,20 @@ const Dashboard = () => {
           </div>
 
           <div>
-            <div className="glass-card hover-glow rounded-xl p-6">
-              <div className="flex justify-between items-center mb-6">
+            <div className="glass-card hover-glow rounded-xl p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
                 <h2 className="text-2xl font-bold text-white">My Bookings</h2>
                 <button
                   onClick={handleRefresh}
                   disabled={refreshing}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 press"
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 press"
                 >
                   <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                   Refresh
                 </button>
               </div>
 
-              <div className="space-y-4 max-h-[600px] overflow-y-auto">
+              <div className="space-y-4 max-h-[600px] overflow-y-auto overscroll-contain">
                 {bookings.length === 0 ? (
                   <div className="text-center py-12">
                     <Ticket className="w-16 h-16 text-white/40 mx-auto mb-4" />

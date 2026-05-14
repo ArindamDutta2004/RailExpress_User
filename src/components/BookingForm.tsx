@@ -280,7 +280,7 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
   };
 
   return (
-    <div className="glass-card hover-glow rounded-xl p-6">
+    <div className="glass-card hover-glow rounded-xl p-4 sm:p-6">
       <h2 className="text-2xl font-bold text-white mb-6">Create New Booking</h2>
 
       {disabled && (
@@ -500,7 +500,7 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 mt-2">
+        <div className="flex flex-wrap items-center gap-3 mt-2">
           <span className="text-white/80 text-sm">Passengers:</span>
           <button
             type="button"
@@ -519,7 +519,7 @@ const BookingForm = ({ onBookingSuccess, disabled }: BookingFormProps) => {
           >
             +
           </button>
-          <span className="text-white/60 text-sm">(1 to 6 passengers)</span>
+          <span className="basis-full sm:basis-auto text-white/60 text-sm">(1 to 6 passengers)</span>
         </div>
 
         <div className="space-y-4 mt-4">

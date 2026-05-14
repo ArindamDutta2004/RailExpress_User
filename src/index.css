@@ -4,6 +4,41 @@
 
 body {
   min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
 }
 
 .animated-bg {
@@ -64,6 +99,26 @@ body {
 .press:hover {
   transform: translateY(-1px) scale(1.01);
   box-shadow: 0 8px 22px rgba(2, 132, 199, 0.25);
+}
+
+@media (max-width: 768px), (hover: none) {
+  .animated-bg {
+    background-attachment: scroll;
+  }
+
+  .animated-bg::before {
+    position: absolute;
+  }
+
+  .glass-card {
+    border-radius: 0.75rem;
+  }
+
+  .hover-glow:hover,
+  .press:hover {
+    transform: none;
+    box-shadow: inherit;
+  }
 }
 
 .page {
