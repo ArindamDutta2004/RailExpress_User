@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Bell, BellRing, CheckCheck, ExternalLink, Mail, MailOpen, X } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 
@@ -23,27 +25,53 @@ const NotificationBell = () => {
     markAllRead,
   } = useNotifications();
 
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setPanelOpen(!panelOpen)}
-        className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-white text-gray-800 transition hover:bg-gray-100 press"
-        aria-label="Notifications"
-      >
-        {unreadCount > 0 ? <BellRing className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
-        {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 min-w-[1.25rem] rounded-full bg-red-600 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
-            {unreadCount > 99 ? '99+' : unreadCount}
-          </span>
-        )}
-      </button>
+  useEffect(() => {
+    if (!panelOpen) return;
 
-      {panelOpen && (
-        <div className="absolute right-0 top-12 z-50 w-[min(92vw,24rem)] overflow-hidden rounded-xl border border-white/40 bg-white shadow-2xl">
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalHtmlOverscrollBehavior = document.documentElement.style.overscrollBehavior;
+
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.overscrollBehavior = 'contain';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setPanelOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.documentElement.style.overscrollBehavior = originalHtmlOverscrollBehavior;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [panelOpen, setPanelOpen]);
+
+  const notificationPanel =
+    panelOpen &&
+    createPortal(
+      <div
+        className="fixed inset-0 z-[9999] flex items-start justify-center bg-slate-950/25 px-3 pt-20 pb-4 backdrop-blur-[2px] sm:justify-end sm:px-6 sm:pt-20"
+        role="presentation"
+        onMouseDown={() => setPanelOpen(false)}
+      >
+        <div
+          className="flex max-h-[calc(100dvh-6rem)] w-full max-w-96 flex-col overflow-hidden rounded-xl border border-white/40 bg-white shadow-2xl sm:w-[24rem]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="notification-panel-title"
+          onMouseDown={(event) => event.stopPropagation()}
+        >
           <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
             <div>
-              <h3 className="font-semibold text-slate-900">Notifications</h3>
+              <h3 id="notification-panel-title" className="font-semibold text-slate-900">
+                Notifications
+              </h3>
               <p className="text-xs text-slate-500">{unreadCount} unread</p>
             </div>
             <div className="flex items-center gap-1">
@@ -80,7 +108,7 @@ const NotificationBell = () => {
             </div>
           )}
 
-          <div className="max-h-[70vh] overflow-y-auto">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             {loading && notifications.length === 0 ? (
               <div className="px-4 py-8 text-center text-sm text-slate-500">Loading...</div>
             ) : notifications.length === 0 ? (
@@ -135,8 +163,27 @@ const NotificationBell = () => {
             )}
           </div>
         </div>
-      )}
-    </div>
+      </div>,
+      document.body
+    );
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setPanelOpen(!panelOpen)}
+        className="relative flex h-10 w-10 items-center justify-center rounded-lg bg-white text-gray-800 transition hover:bg-gray-100 press"
+        aria-label="Notifications"
+      >
+        {unreadCount > 0 ? <BellRing className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
+        {unreadCount > 0 && (
+          <span className="absolute -right-1 -top-1 min-w-[1.25rem] rounded-full bg-red-600 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </span>
+        )}
+      </button>
+      {notificationPanel}
+    </>
   );
 };
 
